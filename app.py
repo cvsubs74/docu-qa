@@ -7,7 +7,7 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.llms import AzureOpenAI
 
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA, ConversationalRetrievalChain
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
@@ -49,26 +49,21 @@ def save_and_load_file(llm):
             loader = PyPDFLoader(filepath)
             if loader is not None:
                 document = loader.load()
-                """
-                # Query
-                chain = load_qa_chain(llm=llm, chain_type="map_reduce")
-                query = "Summarize the document"
-                st.write(chain.run(input_documents=document, question=query, verbose=True))
-                """
                 # split the documents into chunks
                 text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
                 texts = text_splitter.split_documents(document)
                 # select which embeddings we want to use
                 embeddings = OpenAIEmbeddings()
                 # create the vector store to use as the index
-                db = FAISS.from_documents(texts, embeddings)
-                # expose this index in a retriever interface
-                retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 2})
-                # create a chain to answer questions
-                qa = RetrievalQA.from_chain_type(
-                    llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
+                vector_store = FAISS.from_documents(texts, embeddings)
+                chat_history = []
+                qa = ConversationalRetrievalChain.from_llm(llm, vector_store.as_retriever(), verbose=False)
                 query = "Summarize the document"
-                result = qa({"query": query})
+                result = qa({"question": query, "chat_history": chat_history})
+                st.write(result)
+                chat_history = [(query, result["answer"])]
+                query = "Give me more details about windows"
+                result = qa({"question": query, "chat_history": chat_history})
                 st.write(result)
 
 
