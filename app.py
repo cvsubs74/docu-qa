@@ -2,15 +2,11 @@ import os
 import tempfile
 
 import streamlit as st
-from langchain.chains.question_answering import load_qa_chain
+from langchain.chains import RetrievalQA
 from langchain.document_loaders import PyPDFLoader
-from langchain.indexes import VectorstoreIndexCreator
-from langchain.llms import AzureOpenAI
-
-from langchain.chains import RetrievalQA, ConversationalRetrievalChain
-from langchain.indexes import VectorstoreIndexCreator
-from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
+from langchain.llms import AzureOpenAI
+from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 
 
@@ -37,6 +33,13 @@ def display_introduction():
                 )
 
 
+def conversational_chat(chain, query):
+    result = chain({"question": query,
+                    "chat_history": st.session_state['history']})
+    st.session_state['history'].append((query, result["answer"]))
+    return result["answer"]
+
+
 def save_and_load_file(llm):
     uploaded_file = st.file_uploader("Choose a document file", type=["pdf"])
     loader = None
@@ -56,15 +59,12 @@ def save_and_load_file(llm):
                 embeddings = OpenAIEmbeddings()
                 # create the vector store to use as the index
                 vector_store = FAISS.from_documents(texts, embeddings)
-                chat_history = []
-                qa = ConversationalRetrievalChain.from_llm(llm, vector_store.as_retriever(), verbose=False)
-                query = "Summarize the document"
-                result = qa({"question": query, "chat_history": chat_history})
-                st.write(result)
-                chat_history = [(query, result["answer"])]
-                query = "Give me more details about windows"
-                result = qa({"question": query, "chat_history": chat_history})
-                st.write(result)
+                qa = RetrievalQA.from_chain_type(llm=llm, chain_type="map_reduce",
+                                                 retriever=vector_store.as_retriever())
+                query = st.text_area(label="Ask a question", placeholder="Your question..",
+                                     key="text_input")
+                if query:
+                    st.write(qa.run(query))
 
 
 def load_llm():
