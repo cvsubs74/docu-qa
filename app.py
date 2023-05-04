@@ -11,6 +11,7 @@ import pinecone
 
 index_name = "docuqa"
 
+
 def main():
     # Display introduction
     display_introduction()
@@ -63,10 +64,8 @@ def vectorize_and_save(uploaded_file):
     print(">>vectorize")
     # Index
     index = pinecone.Index(index_name)
-    # Save the uploaded file in a temp directory
-    filepath = save_file(uploaded_file)
-    # Load the file
-    document = load_file(filepath)
+    # Save the uploaded file in a temp directory and load it
+    document = save_and_load_document(uploaded_file)
     # split the documents into chunks
     texts = split_into_chunks(document)
     # Remove the document first
@@ -101,12 +100,13 @@ def load_file(filepath):
     return document
 
 
-def save_file(uploaded_file):
+def save_and_load_document(uploaded_file):
     temp_dir = tempfile.TemporaryDirectory()
     filepath = os.path.join(temp_dir.name, uploaded_file.name)
     with open(filepath, "wb") as f:
         f.write(uploaded_file.getbuffer())
-    return filepath
+    loader = PyPDFLoader(filepath)
+    return loader.load()
 
 
 def user_query(vector_store, llm):
