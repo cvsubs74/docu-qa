@@ -87,7 +87,7 @@ def vectorize(uploaded_file):
 
 def user_query(vector_store, llm):
     print(">>user_query")
-    qa = RetrievalQA.from_chain_type(llm=llm, chain_type="map_reduce",
+    qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff",
                                      retriever=vector_store.as_retriever())
     query = st.text_area(label="Ask a question", placeholder="Your question..",
                          key="text_input", value="")
