@@ -11,7 +11,6 @@ import pinecone
 
 index_name = "docuqa"
 
-
 def main():
     # Display introduction
     display_introduction()
@@ -22,7 +21,7 @@ def main():
     # Get uploaded document
     uploaded_file = st.file_uploader("Choose a document file", type=["pdf"])
     if uploaded_file:
-        vector_store = vectorize(uploaded_file)
+        vector_store = vectorize_and_save(uploaded_file)
         # query
         user_query(vector_store, llm)
 
@@ -60,28 +59,54 @@ def display_introduction():
 
 
 @st.cache_resource
-def vectorize(uploaded_file):
+def vectorize_and_save(uploaded_file):
     print(">>vectorize")
-    index = pinecone.Index("docuqa")
-    vector_store = None
+    # Index
+    index = pinecone.Index(index_name)
+    # Save the uploaded file in a temp directory
+    filepath = save_file(uploaded_file)
+    # Load the file
+    document = load_file(filepath)
+    # split the documents into chunks
+    texts = split_into_chunks(document)
+    # Remove the document first
+    remove_doc(index, uploaded_file)
+    return vectorize(texts, uploaded_file)
+
+
+def vectorize(texts, uploaded_file):
+    # select which embeddings we want to use
+    embeddings = OpenAIEmbeddings(chunk_size=1)
+    # Re-vectorize it
+    vector_store = Pinecone.from_texts(
+        [t.page_content for t in texts], embeddings,
+        index_name=index_name, namespace=uploaded_file.name)
+    return vector_store
+
+
+def remove_doc(index, uploaded_file):
+    index.delete(delete_all=True, namespace=uploaded_file.name)
+
+
+def split_into_chunks(document):
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    texts = text_splitter.split_documents(document)
+    return texts
+
+
+def load_file(filepath):
+    # Load the file
+    loader = PyPDFLoader(filepath)
+    document = loader.load()
+    return document
+
+
+def save_file(uploaded_file):
     temp_dir = tempfile.TemporaryDirectory()
     filepath = os.path.join(temp_dir.name, uploaded_file.name)
     with open(filepath, "wb") as f:
         f.write(uploaded_file.getbuffer())
-        loader = PyPDFLoader(filepath)
-        if loader is not None:
-            document = loader.load()
-            # split the documents into chunks
-            text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-            texts = text_splitter.split_documents(document)
-            # select which embeddings we want to use
-            embeddings = OpenAIEmbeddings(chunk_size=1)
-            # create the vector store to use as the index
-            index.delete(delete_all=True, namespace=uploaded_file.name)
-            vector_store = Pinecone.from_texts(
-                [t.page_content for t in texts], embeddings,
-                index_name=index_name, namespace=uploaded_file.name)
-    return vector_store
+    return filepath
 
 
 def user_query(vector_store, llm):
