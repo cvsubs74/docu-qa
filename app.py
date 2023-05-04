@@ -54,9 +54,8 @@ def display_introduction():
                 "long PDF documents. Whether you're a busy professional trying to "
                 "extract insights from a report or a student looking for specific information "
                 "in a textbook, this powerful web app has the tools you need to get the "
-                "job done quickly and efficiently. With its intuitive interface and advanced "
-                "natural language processing capabilities, DocuQA is the perfect solution for "
-                "conducting question-answering tasks on long documents."
+                "job done quickly and efficiently. With its intuitive interface, DocuQA is "
+                "the perfect solution for conducting question-answering tasks on long documents."
                 )
 
 
