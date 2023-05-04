@@ -1,8 +1,5 @@
 import os
 import tempfile
-import tkinter
-
-import streamlit
 import streamlit as st
 from langchain.chains import RetrievalQA
 from langchain.document_loaders import PyPDFLoader
@@ -11,7 +8,6 @@ from langchain.llms import AzureOpenAI
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Pinecone
 import pinecone
-import uuid
 
 index_name = "docuqa"
 
