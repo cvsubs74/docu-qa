@@ -78,6 +78,7 @@ def vectorize(uploaded_file):
             # select which embeddings we want to use
             embeddings = OpenAIEmbeddings(chunk_size=1)
             # create the vector store to use as the index
+            index.delete(delete_all=True, namespace=uploaded_file.name)
             vector_store = Pinecone.from_texts(
                 [t.page_content for t in texts], embeddings,
                 index_name=index_name, namespace=uploaded_file.name)
