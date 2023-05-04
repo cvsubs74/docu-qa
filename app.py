@@ -38,7 +38,6 @@ def initialize_vector_store():
 
 @st.cache_resource
 def load_llm():
-    print(">>load_llm")
     os.environ["OPENAI_API_TYPE"] = st.secrets["OPENAI_API_TYPE"]
     os.environ["OPENAI_API_BASE"] = st.secrets["OPENAI_API_BASE"]
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
@@ -47,7 +46,6 @@ def load_llm():
 
 
 def display_introduction():
-    print(">>display_introduction")
     st.set_page_config(page_title="DocuQA", layout="wide")
     st.header("DocuQA")
     st.markdown("DocuQA is the ultimate tool for anyone who needs to work with "
@@ -61,7 +59,6 @@ def display_introduction():
 
 @st.cache_resource
 def vectorize_and_save(uploaded_file):
-    print(">>vectorize")
     # Index
     index = pinecone.Index(index_name)
     # Save the uploaded file in a temp directory and load it
@@ -110,7 +107,6 @@ def save_and_load_document(uploaded_file):
 
 
 def user_query(vector_store, llm):
-    print(">>user_query")
     qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff",
                                      retriever=vector_store.as_retriever())
     query = st.text_area(label="Ask a question", placeholder="Your question..",
