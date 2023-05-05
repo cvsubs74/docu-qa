@@ -33,7 +33,8 @@ def main():
     # Get uploaded document
     uploaded_file = st.file_uploader("Choose a document file", type=["pdf"])
     if uploaded_file:
-        vector_store = vectorize_and_save(uploaded_file)
+        with st.spinner("Please wait..."):
+            vector_store = vectorize_and_save(uploaded_file)
         # query
         user_query(vector_store, llm)
 
@@ -223,7 +224,7 @@ def retrieve_document_and_query_count():
     return document_count, query_count
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def vectorize_and_save(uploaded_file):
     # Index
     index = pinecone.Index(index_name)
