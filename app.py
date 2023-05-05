@@ -47,7 +47,8 @@ def display_stats():
     df = pd.DataFrame(data)
 
     # Create a bar chart of the counter data using Plotly Express
-    fig = px.bar(df, x='Counter Type', y='Count', color='Counter Type', height=400)
+    fig = px.bar(df, x='Counter Type', y='Count', color='Counter Type',
+                 height=400)
 
     # Add the count values to the x-axis labels
     fig.update_layout(xaxis_tickangle=-0,
@@ -55,19 +56,20 @@ def display_stats():
                       xaxis=dict(tickmode='array',
                                  tickvals=df['Counter Type'],
                                  ticktext=[f"{c:,d}" for c in df['Count']],
-                                 title=''))
+                                 title=''),
+                      yaxis=dict(range=[0, max(df['Count'])]))
 
+    # fig.update_traces(marker_color=['blue', 'light blue'])
     # Modify the chart size and margins
     fig.update_layout(
         margin=dict(l=20, r=20, t=40, b=20),
-        width=350,
+        width=500,
         height=300,
     )
 
     # Display the chart and heading in the Streamlit app
     st.write("*App Usage Stats*")
     st.plotly_chart(fig)
-
 
 
 def set_page_config():
@@ -114,6 +116,7 @@ def display_introduction():
                 "job done quickly and efficiently. With its intuitive interface, DocuQA is "
                 "the perfect solution for conducting question-answering tasks on long documents."
                 )
+
 
 def retrieve_document_and_query_count():
     # Retrieve total document count from the database
