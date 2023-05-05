@@ -156,7 +156,7 @@ def get_reviews():
     """Get all the reviews from the database."""
     connection = sqlite3.connect(dbname)
     cursor = connection.cursor()
-    cursor.execute("SELECT rating, comment FROM reviews ORDER BY rating DESC LIMIT 5")
+    cursor.execute("SELECT rating, comment FROM reviews ORDER BY rating DESC LIMIT 10")
     return cursor.fetchall()
 
 
@@ -173,8 +173,7 @@ def display_reviews():
             reviews_str = ""
             for rating, comment in reviews:
                 # Create a div element with the star rating
-                st.write('★' * int(round(rating)))
-                st.write(comment)
+                st.write(comment + ' ' + '★' * int(round(rating)))
 
 
 def initialize_review_store():
