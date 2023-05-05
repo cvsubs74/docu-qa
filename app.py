@@ -37,12 +37,14 @@ def main():
         # query
         user_query(vector_store, llm)
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3, col4, col5 = st.columns((2, 2, 2, 1, 2))
     with col1:
         display_stats()
-    with col2:
+    with col3:
         display_review_form()
         display_review_stats()
+    with col5:
+        display_reviews()
 
 
 def display_stats():
@@ -86,7 +88,7 @@ def set_page_config():
 
 def slider_rating_widget():
     st.subheader("Rating")
-    rating = st.slider("", 1, 5, key="slider_rating", format="%d",
+    rating = st.slider("", 1, 5, 3, key="slider_rating", format="%d",
                        help="Drag the slider to rate the app")
     return rating
 
@@ -154,31 +156,25 @@ def get_reviews():
     """Get all the reviews from the database."""
     connection = sqlite3.connect(dbname)
     cursor = connection.cursor()
-    cursor.execute(f"SELECT rating, comment FROM reviews")
+    cursor.execute("SELECT rating, comment FROM reviews ORDER BY rating DESC LIMIT 5")
     return cursor.fetchall()
 
 
 def display_reviews():
     """Display all the reviews in a Streamlit app."""
     reviews = get_reviews()
-
-    st.write("**Reviews**")
+    st.subheader("Reviews")
     if not reviews:
         st.write("No reviews yet. Be the first to leave a review!")
         comment = st.text_input("Comment", "")
-        add_review()
+        add_review(comment)
     else:
-        for rating, comment in reviews:
-            # Create a div element with the star rating
-            star_html = ""
-            for i in range(1, 6):
-                if i <= rating:
-                    star_html += '<i class="material-icons">star</i>'
-                else:
-                    star_html += '<i class="material-icons">star_border</i>'
-            st.write(f'<div class="review">{star_html}</div>', unsafe_allow_html=True)
-            st.write(f"Comment: {comment}")
-            st.write("---")
+        with st.container():
+            reviews_str = ""
+            for rating, comment in reviews:
+                # Create a div element with the star rating
+                st.write('★' * int(round(rating)))
+                st.write(comment)
 
 
 def initialize_review_store():
