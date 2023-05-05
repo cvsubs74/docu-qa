@@ -88,7 +88,7 @@ def set_page_config():
 
 
 def slider_rating_widget():
-    st.subheader("Rating")
+    st.subheader("Rate App")
     rating = st.slider("", 1, 5, 3, key="slider_rating", format="%d",
                        help="Drag the slider to rate the app")
     return rating
