@@ -156,7 +156,7 @@ def get_reviews():
     """Get all the reviews from the database."""
     connection = sqlite3.connect(dbname)
     cursor = connection.cursor()
-    cursor.execute("SELECT rating, comment FROM reviews WHERE comment is not NULL ORDER BY rating DESC LIMIT 10")
+    cursor.execute("SELECT rating, comment FROM reviews WHERE comment != '' ORDER BY rating DESC LIMIT 10")
     return cursor.fetchall()
 
 
