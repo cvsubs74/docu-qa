@@ -85,7 +85,6 @@ def initialize_vector_store():
     )
 
 
-@st.cache_resource
 def initialize_counter_store():
     conn = sqlite3.connect(dbname)
     c = conn.cursor()
@@ -217,14 +216,15 @@ def save_and_load_document(uploaded_file):
 
 
 def user_query(vector_store, llm):
-    # Add the query counter
-    add_query_counter()
     # Retrieve query results
     qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff",
                                      retriever=vector_store.as_retriever())
     query = st.text_area(label="Ask a question", placeholder="Your question..",
                          key="text_input", value="")
     if query:
+        # Add the query counter
+        add_query_counter()
+        # Run the query
         st.write(qa.run(query))
 
 
