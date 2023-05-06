@@ -7,12 +7,12 @@ from langchain.text_splitter import CharacterTextSplitter
 
 class Document:
     def __init__(self, uploaded_file):
-        temp_dir = tempfile.TemporaryDirectory()
-        filepath = os.path.join(temp_dir.name, uploaded_file.name)
-        with open(filepath, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-        loader = PyPDFLoader(filepath)
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.write(uploaded_file.read())
+        temp_file.close()
+        loader = PyPDFLoader(temp_file.name)
         self.contents = loader.load()
+        os.unlink(temp_file.name)
 
     def split_into_chunks(self):
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)

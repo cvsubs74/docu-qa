@@ -12,6 +12,10 @@ class DocuQA:
         self.stats = Stats(dbname)
 
     @staticmethod
+    def set_page_config():
+        st.set_page_config(page_title="DocuQA", layout="wide")
+
+    @staticmethod
     def display_introduction():
         st.header("DocuQA")
         # Intro

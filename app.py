@@ -1,33 +1,25 @@
 import os
-import sqlite3
-import tempfile
 
-import pandas as pd
 import pinecone
-import plotly.express as px
 import streamlit as st
-
-from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms import AzureOpenAI
-from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Pinecone
 
 from document import Document
 from docuqa import DocuQA
-from stats import Stats
 
 index_name = "docuqa"
 
 
 def main():
     # Set page config
-    set_page_config()
+    docu_qa = DocuQA()
+    docu_qa.set_page_config()
     # Load llm
     llm = load_llm()
     # Initialize the vector store
     initialize_vector_store()
-    docu_qa = DocuQA()
     # Display introduction
     docu_qa.display_introduction()
     # Get uploaded document
@@ -39,10 +31,6 @@ def main():
         docu_qa.user_query(vector_store, llm)
     # Display usage statistics
     docu_qa.display_usage_stats()
-
-
-def set_page_config():
-    st.set_page_config(page_title="DocuQA", layout="wide")
 
 
 @st.cache_resource
@@ -72,7 +60,7 @@ def vectorize_and_save(_docu_qa, uploaded_file):
     # Remove the document first
     remove_doc(index, uploaded_file)
     # Add document counter
-    _docu_qa.add_document_count_and_size(size=uploaded_file.size / (1024*1024))
+    _docu_qa.add_document_count_and_size(size=uploaded_file.size / (1024 * 1024))
     return vectorize(texts, uploaded_file)
 
 
