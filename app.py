@@ -14,15 +14,15 @@ index_name = "docuqa"
 
 def main():
     # Set page config
-    docu_qa = DocuQA()
-    docu_qa.set_page_config()
+    DocuQA.set_page_config()
     # Load llm
     llm = load_llm()
     # Initialize the vector store
     initialize_vector_store()
     # Display introduction
-    docu_qa.display_introduction()
+    DocuQA.display_introduction()
     # Get uploaded document
+    docu_qa = DocuQA()
     uploaded_file = st.file_uploader("Choose a document file", type=["pdf"])
     if uploaded_file:
         with st.spinner("Please wait..."):
