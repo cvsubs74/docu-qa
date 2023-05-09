@@ -16,7 +16,3 @@ class Document:
 
     def get_content(self):
         return self.contents
-
-    def split_into_chunks(self):
-        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        return text_splitter.split_documents(self.contents)
