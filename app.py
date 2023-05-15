@@ -1,14 +1,8 @@
-import os
-
-import pinecone
 import streamlit as st
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.llms import AzureOpenAI
-from langchain.vectorstores import Pinecone
 
 from document import Document
 from docuqa import DocuQA
-from llm import LLM
+from llmopenai import LLMOpenAI
 from vectoroperations import VectorOperations
 
 index_name = "docuqa"
@@ -51,9 +45,9 @@ def vector_operations():
 
 @st.cache_resource
 def load_llm():
-    return LLM(st.secrets["OPENAI_API_TYPE"],
-               st.secrets["OPENAI_API_BASE"],
-               st.secrets["OPENAI_API_KEY"]).load()
+    return LLMOpenAI(st.secrets["OPENAI_API_TYPE"],
+                     st.secrets["OPENAI_API_BASE"],
+                     st.secrets["OPENAI_API_KEY"]).load()
 
 
 # Press the green button in the gutter to run the script.
