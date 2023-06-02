@@ -146,8 +146,8 @@ class DocuQA:
         # Retrieve query results
         qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff",
                                          retriever=vector_store.as_retriever())
-        query = st.text_area(label="Ask a question", placeholder="Your question..",
-                             key="text_input", value="")
+        query = st.text_input(label="Ask a question", placeholder="Your question..",
+                              key="text_input", value="")
         if query:
             # Add the query counter
             self.stats.add_query_count()

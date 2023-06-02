@@ -2,7 +2,6 @@ import os
 import tempfile
 
 from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import CharacterTextSplitter
 
 
 class Document:
